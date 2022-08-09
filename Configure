@@ -1,3 +1,13 @@
+<<Vmware Tool Install>>
+
+cd /media/zeek
+cd 'VMware Tools'
+tar zxvf VMwareTools-10.3.23-16594550.tar.gz -C /tmp
+cd /tmp/vmware-tools-distrib
+./vmware-install.pl
+
+
+
 <<Zeek Installation>>
 
 apt update 
