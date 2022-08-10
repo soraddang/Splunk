@@ -21,3 +21,8 @@ apt-get install zeek -y
 echo "export PATH=$PATH:/opt/zeek/bin" >> ~/.bashrc
 source ~/.bashrc
 zeek --version
+
+zeekctl check
+zeekctl deploy
+zeekctl status
+ls –l /opt/zeek/spool/zeek
