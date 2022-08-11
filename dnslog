@@ -1,0 +1,38 @@
+P.264
+index=networklog sourcetype=dnslog domain!="-" 
+| where NOT cidrmatch(domain, "0.0.0.0/0") 
+| eval list="Mozilla"
+| `ut_parse(domain, list)'
+| where NOT match(domain,"(microsoft.com|akamaized.net| amazonaws.com)$") 
+| eval sub_len=len(ut_subdomain) 
+| search sub_len > 20 
+| table ut_domain, ut_subdomain, sub_len, sut_netloc
+
+P. 267
+index=networklog sourcetype=dnslog (dst!="172.16.142.11" AND dst!="172.16.142.12") (src!="172.16.142.11" AND src!="172.16.142.12") 
+| stats count by dst 
+| sort - count
+
+
+P. 269
+index=networklog sourcetype=dnslog domain!="-" 
+| where NOT  match(domain,"(microsoft.com|akamaized.net|amazonaws.com|addr.|quo10.jp)$") 
+| eval list="mozilla" 
+| `ut_parse(domain,list)` 
+|`ut_shannon(ut_netloc)` 
+| eval shannon=round(ut_shannon,2) 
+| where shannon > 3.9 
+| eval shannon_str=ut_netloc." / ".shannon 
+| stats count by ut_domain, shannon_str  
+| stats list(shannon_str) by ut_domain
+
+
+P.273
+| inputlookup majesticmillion.csv 
+| fields GlobalRank, Domain 
+| search GlobalRank <= 100000 
+| `ut_shannon(Domain)` 
+| eval shannon=round(ut_shannon,3) 
+| search shannon > 4
+| table GlobalRank, Domain, shannon 
+| sort GlobalRank
