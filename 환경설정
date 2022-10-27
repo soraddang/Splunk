@@ -46,3 +46,16 @@ baseurl=https://archive.kernel.org/centos-vault/8.0.1905/PowerTools/x86_64/os/
 	  http://linuxsoft.cern.ch/centos-vault/8.0.1905/PowerTools/x86_64/os/
 gpgcheck=0
 
+
+
+[NTP 서버주소]
+
+server 1.kr.pool.ntp.org iburst
+server 2.asia.pool.ntp.org iburst
+server 3.asia.pool.ntp.org iburst
+
+
+
+
+
+
