@@ -55,6 +55,54 @@ server 2.asia.pool.ntp.org iburst
 server 3.asia.pool.ntp.org iburst
 
 
+[Zeek 설치]
+
+<<설치전 환경설정>>
+#apt update 
+#apt-get install curl gnupg2 wget –y
+#curl -fsSL https://download.opensuse.org/repositories/security:zeek/xUbuntu_20.04/Release.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/security_zeek.gpg
+#echo 'deb http://download.opensuse.org/repositories/security:/zeek/xUbuntu_20.04/ /' | tee /etc/apt/sources.list.d/security:zeek.list
+
+<<설치>>
+#apt update -y
+#apt-get install zeek -y
+
+<<Path 설정>>
+#echo "export PATH=$PATH:/opt/zeek/bin" >> ~/.bashrc
+#source ~/.bashrc
+#zeek --version
+
+<<환경설정>>
+#cd /opt/zeek/etc
+#cat /opt/zeek/etc/networks.cfg
+
+#nano /opt/zeek/etc/node.cfg
+  [zeek]
+   type=standalone
+   host=localhost
+   interface=ens33
+
+<<서비스 활성화>> 
+#zeekctl check
+#zeekctl deploy
+#zeekctl status
+#ls –l /opt/zeek/spool/zeek
+
+<<생성된 로그 확인>>
+#tail /opt/zeek/spool/zeek/conn.log
+
+
+<<생성된 로그파일 splunk server에게 전송>>
+#apt-get install –y openssh-server
+#ufw allow 22/tcp
+
+#scp zeek.zip splunk@192.168.10.10:/tmp
+
+
+
+
+
+
 
 
 
