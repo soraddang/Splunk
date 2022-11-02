@@ -1,0 +1,33 @@
+P.243
+index=dnslog sourcetype=dnslog domain!="-"
+| eval list="mozilla"
+| `ut_parse(domain,list)`
+| table ut_netloc, ut_domain, ut_subdomain, ut_domain, ut_domain_without_tld, ut_tld
+| dedup ut_netloc
+
+P.244
+index=dnslog sourcetype=dnslog dpt=53 domain!="*.arpa" domain!="-" 
+| eval list="mozilla" 
+| `ut_parse_extended(domain,list)` 
+| top showperc=f limit=10 ut_netloc
+
+P.246 
+index=dnslog sourcetype=dnslog dpt=53 domain!="*.arpa" domain!="-" 
+| eval list="mozilla" 
+| `ut_parse(domain,list)` 
+| where math(ut_domain, "mycompany.co.kr$")
+| top showperc=f ut_netloc
+
+P.248 
+index=dnslog sourcetype=dnslog domain!="-" rcode_name= "NXDomain" 
+| top showperc=f src, domain
+
+
+P. 264
+index=dnslog sourcetype=dnslog domain!="-"
+| where NOT cidrmatch(domain, "0.0.0.0/0")
+| eval list="mozilla" 
+| `ut_parse(domain,list)` 
+| where not match(ut_domain, "(microsoft.com|akamaized.net|amazonaws.com)$")
+| eval sub_len =len(ut_subdomain)
+| search sub_len > 20
