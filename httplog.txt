@@ -29,21 +29,21 @@ index=httplog sourcetype=httplog domain!="(empty)" status_code!="-"
 
 
 
-index=httplog sourcetype=httplog 
+index=httprepo sourcetype=httpfield 
 | stats count(eval(method="OPTIONS")) AS option_count by src 
 | where option_count > 10 
 | sort option_count desc
 
 
 
-index=httplog sourcetype=httplog 
+index=httprepo sourcetype=httpfield 
 | where NOT match(method, "(GET|POST|-)")
 | stats count(src) as src_count by method 
 | sort - src_count
 
 
 
-index=httplog sourcetype=httplog (request_body_len!=0 OR response_body_len!="0") domain!="-" 
+index=httprepo sourcetype=httpfield  (request_body_len!=0 OR response_body_len!="0") domain!="-" 
 | stats sum(request_body_len) as outTotal sum(response_body_len) as inTotal by src, dst 
 | eval oMB=round(outTotal/(1024*1024),2) 
 | eval iMB=round(inTotal/(1024*1024),2) 
@@ -55,7 +55,7 @@ index=httplog sourcetype=httplog (request_body_len!=0 OR response_body_len!="0")
 
 
 
-index=httplog sourcetype=httplog resp_mime_types="application/x-dosexec" uri!="-" 
+index=httprepo sourcetype=httpfield  resp_mime_types="application/x-dosexec" uri!="-" 
 | eval filename1=mvindex(split(uri,"/"),-1) 
 | eval filename=if(like(filename1,"%?%"), mvindex(split(filename1,"?"),0),filename1) 
 | eval filetype=if(match(filename,"(.exe|.bat|.ps1|.dll|.ocx)$"), "PE", "Not_PE") 
@@ -65,7 +65,7 @@ index=httplog sourcetype=httplog resp_mime_types="application/x-dosexec" uri!="-
 
 
 
-index=httplog sourcetype=httplog referrer!="-" eventtype="dst_internet" status_code=200 
+index=httprepo sourcetype=httpfield referrer!="-" eventtype="dst_internet" status_code=200 
 | eval filename1=mvindex(split(uri,"/"),-1) 
 | eval filename=if(like(filename1,"%?%"), mvindex(split(filename1,"?"),0),filename1) 
 | where cidrmatch("0.0.0.0/0",domain) 
@@ -76,7 +76,7 @@ index=httplog sourcetype=httplog referrer!="-" eventtype="dst_internet" status_c
 
 또는 
 
-index=httplog sourcetype=httplog referrer!="-" status_code=200 
+index=httprepo sourcetype=httpfield  referrer!="-" status_code=200 
 | eval filename1=mvindex(split(uri,"/"),-1) 
 | eval filename=if(like(filename1,"%?%"), mvindex(split(filename1,"?"),0),filename1) 
 | where cidrmatch("0.0.0.0/0",domain) 
@@ -87,7 +87,7 @@ index=httplog sourcetype=httplog referrer!="-" status_code=200
 
 
 
-index=httplog sourcetype=httplog (uri="http://*" OR method="connect") 
+index=httprepo sourcetype=httpfield  (uri="http://*" OR method="connect") 
 | table src, domain, uri  
 
 
