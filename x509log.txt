@@ -15,7 +15,7 @@ index=ssllog sourcetype=ssllog domain!="-"
 | top limit=0 showperc=f x509_domain_expiry
 
 
-index=ssllog sourcetype=ssllog eventtype=dst_internet
+index=ssllog sourcetype=ssllog 
 | join type=inner cert_chain_fuids max=0 
     [ search index=ssllog sourcetype=x509 
     | eval expire_date=strftime(cert_not_valid_after, "%Y-%m-%d") 
