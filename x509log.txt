@@ -2,7 +2,7 @@ index=ssllog sourcetype=ssllog domain!="-"
 | top domain showperc=false
 
 
-index=ssllog sourcetype=ssllog eventtype=dst_internet domain!="-" 
+index=ssllog sourcetype=ssllog domain!="-" 
 | join type=inner cert_chain_fuids max=0 
     [ search index=ssllog sourcetype=x509 
     | eval expire_date=strftime(cert_not_valid_after, "%Y-%m-%d") 
