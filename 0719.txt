@@ -1,0 +1,144 @@
+BIP
+ ==> 255.255.255.255 ==> local 
+ ==> 192.168.1.255  ==> direct
+BMAC 
+ ==> ffff.ffff.ffff
+
+==> Broadcast packet 결정 ==> 수신지 MAC address
+
+Multicast IP address : 224~239
+Multicast Mac address : 0100.5e
+
+==> Multiclat packet 결정 ==> 수신지 IP address
+
+Switch 특징 
+- MAC address table
+- forwarding/ flooding 데이타 전송 
+( 수신지 mac )이  ( mac address table  )에 있으면 포워딩
+( 수신지 mac )이  ( mac address table   )에 없으면 플러딩 
+
+Router 특징 
+- Routing table
+- forwarding 방식으로만 데이타 전송 
+( 수신지 IP 또는 수신 네트워크 ID )가  ( 라우팅테이블  )에 있으면 포워딩
+( 수신지 IP 또는 수신 네트워크 ID )이  ( 라우팅테이블  )에 없으면 폐기(drop) 
+
+switch/router 공통점
+- 경로데이타베이스에 멀티캐스트/브로드캐스트 주소를 등록하지 않음
+
+멀티캐스트/브로드캐스트 처리 방식 
+ - switch : 플러딩 
+ - router : 폐기
+
+
+허브 
+ - 1계층
+ - 경로데이타베이스 없음
+ - 전송방법 : 플러딩 
+
+스위치
+ - 2계층
+ - 경로데이타베이스 : MAC address table
+ - 전송방법 : 플러딩, 포워딩
+   ( Multicast/Brodcast 패킷 처리 방식 : 플러딩)
+
+라우터 
+ - 3계층
+ - 경로데이타베이스 : Routing table
+ - 전송방법 : 포워딩
+   ( Multicast/Brodcast 패킷 처리 방식 : drop)
+
+
+ 게이트웨이
+  - 망과 망을 연결시켜주는 중계 장비 
+  - 3계층 이상의 장비 : 라우터, 멀티레이어 스위치, 게이트웨이(방화벽)
+
+                송IP   수IP     송MAC  수MAC  
+PC --- RA  21.7    34.250   6666     2222
+RA --- RB  21.7    34.250   9999    3333
+RB --- FTP 21.7    34.250   7777     5555
+
+IP address ==> 산업표준주소 
+MAC address ==> 비산업표준주소(etherner LAN)
+
+powershell
+
+ARP 캐시테이블 : arp -a
+DNS 캐시테이블 : ipconfig /displaydns
+
+ping 
+   echo-request
+   echo-reply
+
+Switch 종류
+   L2 SW = L1 + 전달기능 
+   L3SW = L2 SW + 라우팅 기능 
+   L4SW = L3 SW + @
+   L7SW = L4 SW   +@ 
+
+
+Router  : 장비 
+Routing : 최적 경로를 선정하는 작업 
+Route : 최적 경로
+
+
+L2SW 
+ - 수신지 MAC address
+ - Fowarding(전달)==>Switching  
+
+L3SW 
+ - 수신지 IP address
+ - Routing 
+ 
+L4SW 
+ - 수신지 IP address + 수신지 Port번호
+ - Load balancing (트래픽 균일 부하) ==> 로드 밸런서
+
+L7SW 
+ - 수신지 IP address + 수신지 Port 번호 + Data
+ - Load balancing (트래픽 균일 부하) ==> 로드 밸런서
+ - Load sharing (트래픽 비균일부하)
+
+MAC address = 제조회사번호(OUI)+일련번호
+IP address = NetworkID+HostID
+문자주소 = 호스트명+도메인명 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
