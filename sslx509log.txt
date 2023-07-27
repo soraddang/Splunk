@@ -1,0 +1,19 @@
+P.259
+
+index=sslx509log sourcetype=ssllog domain!="-" 
+| top domain showperc=false
+
+
+
+P.260
+index=sslx509log sourcetype=ssllog domain!="-" 
+| join type=inner cert_chain_fuids max=0 
+    [ search index=sslx509log sourcetype=x509log 
+    | eval expire_date=strftime(cert_not_valid_after,"%Y-%m-%d") 
+    | eval snapshot_expired=strftime(relative_time(now(),"+2w@"),"%Y-%m-%d") 
+    | eval today=strftime(now(), "%Y-%m-%d") 
+    | where expire_date >= today AND snapshot_expired > expire_date 
+    | rename uid AS cert_chain_fuids 
+    | table cert_chain_fuids, expire_date, snapshot_expired,ex_condition, va_condition,today] 
+| eval x509_domain_expiry=domain."::".expire_date 
+| top limit=0 showperc=f x509_domain_expiry
