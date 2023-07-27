@@ -1,0 +1,49 @@
+[예제 1]
+index=main sourcetype=access_combined_wcookie
+| table clientip, method, productId, status
+
+
+[예제 2]
+index=main sourcetype=access_combined_wcookie
+| table clientip, action, productId, status
+| rename action AS "Customer Action", productId AS ProductID, status AS "HTTP Status"
+
+
+[예제 3]
+index=main sourcetype=access_combined_wcookie status=404
+index=main sourcetype=access_combined_wcookie status=404 | dedup host
+
+[예제 4]
+index=main sourcetype=access_combined_wcookie
+| table clientip, action, productId, status
+| sort action, -productId
+
++ : 오름차순 정렬
+- :  내림차순 정렬
+
+[예제 5]
+index=main sourcetype=access_combined_wcookie
+| table clientip, action, productId, status
+| sort -ip(clientip)
+
+
+[예제 6] 
+index=main sourcetype="access_combined_wcookie" 
+| stats sum(bytes), avg(bytes), max(bytes), median(bytes), min(bytes) by clientip
+
+[예제 7]
+
+* | top useother=T clientip
+
+[예제 8]
+
+* | top useother=T clientip by method
+
+[예제 9]
+
+* | rare useother=T clientip by method
+
+[예제 10]
+
+index=main sourcetype="access_combined_wcookie"
+| timechart span=12h count(clientip) as "Access Count"
