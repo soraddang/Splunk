@@ -1,3 +1,10 @@
+index=dnslog sourcetype=dnslog domain!="-"
+| eval list="mozilla"
+| `ut_parse(domain,list)`
+| table ut_netloc, ut_domain, ut_subdomain, ut_domain, ut_domain_without_tld, ut_tld
+| dedup ut_netloc
+
+
 P.264
 index=networklog sourcetype=dnslog domain!="-" 
 | where NOT cidrmatch(domain, "0.0.0.0/0") 
