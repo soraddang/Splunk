@@ -1,0 +1,60 @@
+HTTPS 구성 
+1. HTTP 설치    ==> http://www.open.net   
+   1) rpm -qa | grep httpd
+   2) cd /var/www/httpd 
+       nano index.html
+   3) 방화벽 설정 (80 개방) 후 활성화 
+       iptables –I INPUT –m state --state NEW, ESTABLISHED –p tcp --dport 80 -j ACCEPT
+       service iptables save 
+       service iptables start
+       
+   4) 웹서비스 활성화       service httpd start
+
+  5) http://www.open.net  
+
+     [W10] /windows/system32/driver/etc/hosts
+           192.168.10.30   www.open.net
+
+2. 인증서 생성 
+    * 인증서 생성 위치 
+       cd /etc/pki/tls/certs
+       키생성 : openssl genrsa –out www.open.net.key 2048
+       인증요청서 : openssl req –new –key www.open.net.key -out www.open.net.csr
+       인증서생성 : openssl x509 –in www.open.net.csr –out www.open.net.crt –req –signkey www.open.net.key –days 365
+
+3. ssl.conf에 인증서와 키를 매핑 
+    */etc/httpd/conf.d/ssl.conf
+     - SSLCertificateFile /etc/pki/tls/certs/www.open.net.crt
+     - SSLCertificateKeyFile /etc/pki/tls/certs/www.open.net.key
+
+4. https 방화벽 활성화 
+    iptables –I INPUT –m state --state NEW, ESTABLISHED –p tcp --dport 443 -j ACCEPT
+    service iptables save 
+    service iptables restart
+
+5. 서비스 개시 
+    service httpd restart
+
+
+6. https://www.open.net
+   ==> 자체 발급 인증서를 생성, 인증서 유효성 검사에서 문제 발생
+   ==> 자체 발급 인증서를 '신뢰할수 있는 루트인증기관'에 import
+
+
+
+
+
+
+
+
+
+       
+      
+
+
+
+
+
+
+
+
