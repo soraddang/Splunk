@@ -1,17 +1,14 @@
-P.233
 index=dnslog sourcetype=dnslog domain!="-"
 | eval list = "mozila"
 | `ut_parse(domain,list)`
 | table ut_netloc, ut_domain, ut_subdomain, ut_domain_without_tld, ut_tld
 | dedup ut_netloc
 
-P.244
 index=dnslog sourcetype=dnslog dpt=53 domain!="*.arpa" domain!="-"
 | eval list="mozilla" | `ut_parse(domain, list)`
 | top showperc=f limit=10 ut_netloc
 
 
-P.264
 index=dnslog sourcetype=dnslog domain!="-" 
 | where NOT cidrmatch(domain, "0.0.0.0/0") 
 | eval list="Mozilla"
@@ -21,13 +18,13 @@ index=dnslog sourcetype=dnslog domain!="-"
 | search sub_len > 20 
 | table ut_domain, ut_subdomain, sub_len, sut_netloc
 
-P. 267
+
 index=dnslog sourcetype=dnslog (dst!="172.16.142.11" AND dst!="172.16.142.12") (src!="172.16.142.11" AND src!="172.16.142.12") 
 | stats count by dst 
 | sort - count
 
 
-P. 269
+
 index=dnslog sourcetype=dnslog domain!="-" 
 | where NOT  match(domain,"(microsoft.com|akamaized.net|amazonaws.com|addr.|quo10.jp)$") 
 | eval list="mozilla" 
@@ -40,7 +37,7 @@ index=dnslog sourcetype=dnslog domain!="-"
 | stats list(shannon_str) by ut_domain
 
 
-P.273
+
 | inputlookup majesticmillion.csv 
 | fields GlobalRank, Domain 
 | search GlobalRank <= 100000 
