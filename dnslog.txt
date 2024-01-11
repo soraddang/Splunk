@@ -4,11 +4,23 @@ index=dnslog sourcetype=dnslog domain!="-"
 | table ut_netloc, ut_domain, ut_subdomain, ut_domain_without_tld, ut_tld
 | dedup ut_netloc
 
+사용자들이 가장 많이 접속한 도메인 10개를 검색
 index=dnslog sourcetype=dnslog dpt=53 domain!="*.arpa" domain!="-"
-| eval list="mozilla" | `ut_parse(domain, list)`
+| eval list="mozilla" 
+| `ut_parse(domain, list)`
 | top showperc=f limit=10 ut_netloc
 
+도메인과 해당 도메인을 접속한 송신지 IP주소를 동시에 검색
+index=dnslog sourcetype=dnslog dpt=53 domain!="*.arpa" domain!="-" 
+| eval list="mozilla" 
+| `ut_parse(domain,list)` 
+| top showperc=f src, ut_netloc
 
+NXDomain이 빈번하게 발생하는 도메인과 해당 질의를 발생하는 송신지 모니터링
+index=dnslog sourcetype=dnslog domain!="-" rcode_name= "NXDomain"
+| top showperc=f src, domain
+
+비정상적인 서브 도메인 길이
 index=dnslog sourcetype=dnslog domain!="-" 
 | where NOT cidrmatch(domain, "0.0.0.0/0") 
 | eval list="Mozilla"
@@ -18,31 +30,7 @@ index=dnslog sourcetype=dnslog domain!="-"
 | search sub_len > 20 
 | table ut_domain, ut_subdomain, sub_len, sut_netloc
 
-
+비허가 DNS 사용
 index=dnslog sourcetype=dnslog (dst!="172.16.142.11" AND dst!="172.16.142.12") (src!="172.16.142.11" AND src!="172.16.142.12") 
 | stats count by dst 
 | sort - count
-
-
-
-index=dnslog sourcetype=dnslog domain!="-" 
-| where NOT  match(domain,"(microsoft.com|akamaized.net|amazonaws.com|addr.|quo10.jp)$") 
-| eval list="mozilla" 
-| `ut_parse(domain,list)` 
-|`ut_shannon(ut_netloc)` 
-| eval shannon=round(ut_shannon,2) 
-| where shannon > 3.9 
-| eval shannon_str=ut_netloc." / ".shannon 
-| stats count by ut_domain, shannon_str  
-| stats list(shannon_str) by ut_domain
-
-
-
-| inputlookup majesticmillion.csv 
-| fields GlobalRank, Domain 
-| search GlobalRank <= 100000 
-| `ut_shannon(Domain)` 
-| eval shannon=round(ut_shannon,3) 
-| search shannon > 4
-| table GlobalRank, Domain, shannon 
-| sort GlobalRank
