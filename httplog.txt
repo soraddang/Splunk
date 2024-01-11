@@ -1,3 +1,4 @@
+사용자들이 가장 많이 접속하는 도메인을 추출해서 접속현황 분석
 index=httplog sourcetype=httplog domain!="(empty)" 
 | iplocation dst 
 | where NOT cidrmatch("0.0.0.0/0", domain) 
@@ -8,41 +9,38 @@ index=httplog sourcetype=httplog domain!="(empty)"
 | head 10
 
 
+클라이언트가 서버에 자원을 요청하는 방식 분식
 index=httplog sourcetype=httplog uri!="-" 
 | top method limit=10 showperc=f
 
 
-
+Top 10 클라이언트 오류
 index=httplog sourcetype=httplog uri!="-" uri!="/" (status_code >=400 AND status_code < 500) 
 | top domain, status_code limit=10 showperc=f
 
-
-
+Top 10 서버 오류
 index=httplog sourcetype=httplog uri!="-" status_code >= 500
 | top domain, status_code limit=10 showperc=f
 
-
-
+HTTP 상태 코드
 index=httplog sourcetype=httplog domain!="(empty)" status_code!="-" 
 | top limit=10 showperc=f status_code
 
-
-
-
+비정상 메소드 사용
 index=httplog sourcetype=httplog 
 | stats count(eval(method="OPTIONS")) AS option_count by src 
 | where option_count > 10 
 | sort option_count desc
 
 
-
+비정상 메소드 사용
 index=httplog sourcetype=httplog 
 | where NOT match(method, "(GET|POST|-)")
 | stats count(src) as src_count by method 
 | sort - src_count
 
 
-
+외부행 데이터 전송
 index=httplog sourcetype=httplog (request_body_len!=0 OR response_body_len!="0") domain!="-" 
 | stats sum(request_body_len) as outTotal sum(response_body_len) as inTotal by src, dst 
 | eval oMB=round(outTotal/(1024*1024),2) 
@@ -54,7 +52,7 @@ index=httplog sourcetype=httplog (request_body_len!=0 OR response_body_len!="0")
 | table src,dst, iMB, oMB, Country, City
 
 
-
+Mime-type과 파일 확장자 불일치
 index=httplog sourcetype=httplog resp_mime_types="application/x-dosexec" uri!="-" 
 | eval filename1=mvindex(split(uri,"/"),-1) 
 | eval filename=if(like(filename1,"%?%"), mvindex(split(filename1,"?"),0),filename1) 
@@ -64,7 +62,7 @@ index=httplog sourcetype=httplog resp_mime_types="application/x-dosexec" uri!="-
 | dedup filename
 
 
-
+사이트 이동 후 실행파일 다운로드
 index=httplog sourcetype=httplog referrer!="-" eventtype="dst_internet" status_code=200 
 | eval filename1=mvindex(split(uri,"/"),-1) 
 | eval filename=if(like(filename1,"%?%"), mvindex(split(filename1,"?"),0),filename1) 
@@ -86,7 +84,7 @@ index=httplog sourcetype=httplog referrer!="-" status_code=200
 | stats list(URL) as Target list(count) as Source by src
 
 
-
+프록시 서버 접속
 index=httplog sourcetype=httplog (uri="http://*" OR method="connect") 
 | table src, domain, uri  
 
