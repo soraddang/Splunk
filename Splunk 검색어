@@ -1,0 +1,73 @@
+1. 
+source="tutorialdata.zip:*" host="gildong" index="main"index=main sourcetype=access_combined_wcookie 
+| table clientip, method, productId, status
+
+2. 
+index=main sourcetype=access_combined_wcookie 
+| table clientip, action, productId, status 
+| rename action AS "Customer Action", productId AS ProductID, status AS "HTTP Status"
+
+3. 
+index=main sourcetype=access_combined_wcookie  status=404
+
+4. 
+index=main sourcetype=access_combined_wcookie  status=404 | dedup host
+
+5. 
+index=main sourcetype=access_combined_wcookie 
+| table clientip, action, productId, status 
+| sort action, -productId
+
+6. 
+index=main sourcetype=access_combined_wcookie 
+| table clientip, action, productId, status 
+| sort -ip(clientip)
+
+7. 
+index=main sourcetype="access_combined_wcookie" 
+| stats sum(bytes), avg(bytes), max(bytes), median(bytes), min(bytes) by clientip
+
+8.
+* | top useother=T clientip
+
+9. 
+* | top useother=T clientip by method
+
+10.
+* | rare useother=T clientip by method
+
+11. 
+index=main sourcetype="access_combined_wcookie" 
+| timechart span=12h count(clientip) as "Access Count"
+
+12.
+index=main sourcetype="access_combined_wcookie" 
+| chart dc(clientip) as "Unique Count" over date_wday
+
+13.
+index=main sourcetype="access_combined_wcookie" 
+| eval description=case(error==404, "Not found", error==500, "internal Server Error",  error==200, "OK")
+
+14.
+* | eval ip1="10.10.0.100", ip2="100.10.0.100"
+| eval network1=if(cidrmatch("10.10.0.0/24", ip1),"local", "external"), network2=if(cidrmatch("10.10.0.0/24", ip2),"local", "external") 
+| table ip1, network1, ip2, network2
+
+15. 
+*| eval passwd_str="lightdm:x:107:117:Light Display M a n a g e r :/var/lib/lightdm:/bin/false" 
+| eval uid=mvindex(split(passwd_str,":"),0) 
+| eval subuid1=substr(uid,2) 
+| eval subuid2=substr(uid,2,4) 
+| table uid, subuid1, subuid2
+
+16.
+index=main sourcetype="access_combined_wcookie"
+| eval unixtime=strptime(req_time,"%d/%B/%Y:%H:%M:%S") 
+| eval humantime=strftime(unixtime,"%Y-/%m-/%d %H:%M:%S")
+| table req_time, unixtime, humantime
+
+17. 
+index=main sourcetype="access_combined_wcookie" 
+| eval unixtime=strptime(req_time,"%d/%B/%Y:%H:%M:%S") 
+| eval date_diff=round((now()-unixtime)/86400,0)
+| table req_time, date_diff
